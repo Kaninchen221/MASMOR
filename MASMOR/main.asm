@@ -9,20 +9,25 @@
 ; Define size of the stack in bytes
 .stack 4096
 
-; Prototype a function with return value dword
-ExitProcess proto, ExitCode:dword
+; Includes
+INCLUDE kernel32.inc
 
 .data
 
-	sum DWORD ?
+	std_output_handle DWORD ?
+	message byte "Hello World!", 13, 10
+	message_size DWORD $ - message
+	bytes_written DWORD ?
 
 .code
 main proc
-	mov eax, 7
-	add eax, 4
-	mov sum, eax
 
-	invoke ExitProcess, 0
+	invoke GetStdHandle, -11 ; -11 is STD_OUTPUT_HANDLE
+	mov std_output_handle, EAX
+
+	invoke WriteConsole, std_output_handle, OFFSET message, message_size, 0, 0
+
+	invoke ExitProcess, EAX ; EAX is storing the return value from the last invoke
 
 main endp
 
