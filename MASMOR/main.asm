@@ -10,24 +10,31 @@
 .stack 4096
 
 ; Includes
+;INCLUDE windows.inc
 INCLUDE kernel32.inc
+INCLUDE user32.inc
+
+MR_WriteConsole MACRO handle, message, message_size
+	invoke WriteConsole, std_output_handle, OFFSET message, message_size, 0, 0
+ENDM
 
 .data
 
 	std_output_handle DWORD ?
-	message byte "Hello World!", 13, 10
-	message_size DWORD $ - message
-	bytes_written DWORD ?
+
+	hello_message byte "MASMOR Start!", 13, 10
+	hello_message_size DWORD $ - hello_message
 
 .code
 main proc
 
+	; STD OUTPUT HANDLE
 	invoke GetStdHandle, -11 ; -11 is STD_OUTPUT_HANDLE
 	mov std_output_handle, EAX
 
-	invoke WriteConsole, std_output_handle, OFFSET message, message_size, 0, 0
+	MR_WriteConsole std_output_handle, hello_message, hello_message_size
 
-	invoke ExitProcess, EAX ; EAX is storing the return value from the last invoke
+	invoke ExitProcess, EAX
 
 main endp
 
