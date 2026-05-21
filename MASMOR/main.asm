@@ -27,12 +27,12 @@ ENDM
 	hello_message byte "MASMOR Start!", 13, 10
 	hello_message_size DWORD $ - hello_message
 
-	test_message byte "TEST_MESSAGE", 0, 13, 10
+	test_message byte "TEST_MESSAGE", 13, 10
 	test_message_size DWORD $ - test_message
 
 .code
 
-MR_test PROC
+MR_test proc
 	mov EAX, test_message_size
 	MR_WriteConsole test_message, EAX
 	mov EAX, 1
@@ -50,7 +50,9 @@ main proc
 	invoke SetConsoleTitle, OFFSET console_title
 
 	main_loop:
+		; Print a message in the console
 		;MR_WriteConsole test_message, test_message_size
+		; Invoke a function
 		invoke MR_test
 		jmp main_loop
 
