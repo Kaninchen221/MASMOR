@@ -84,6 +84,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <MASM>
       <GeneratePreprocessedSourceListing>false</GeneratePreprocessedSourceListing>
@@ -93,7 +96,7 @@
     </MASM>
     <MASM>
       <EnableAssemblyGeneratedCodeListing>true</EnableAssemblyGeneratedCodeListing>
-      <AssembledCodeListingFile>listing_file.txt</AssembledCodeListingFile>
+      <AssembledCodeListingFile>listing_file32.txt</AssembledCodeListingFile>
     </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,7 +125,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
+    <MASM>
+      <AssembledCodeListingFile>listing_file64.txt</AssembledCodeListingFile>
+      <ListAllAvailableInformation>true</ListAllAvailableInformation>
+      <EnableAssemblyGeneratedCodeListing>true</EnableAssemblyGeneratedCodeListing>
+    </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

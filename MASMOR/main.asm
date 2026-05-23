@@ -1,92 +1,73 @@
-COMMENT *
-Program purpose: Learning
-Author: Pawel Krolik
-*
 
-STD_OUTPUT_HANDLE_VALUE = -11
 
-; Enables instructions 80386 and 80387 processors instructions
-.386
+; Include libs
+INCLUDELIB kernel32.lib
+INCLUDELIB user32.lib
 
-; flat - 32bit memory model
-; stdcall - language type
-.model flat, stdcall
-
-; Define size of the stack in bytes
-.stack 4096
-
-; Includes
-;INCLUDE windows.inc
-INCLUDE kernel32.inc
-INCLUDE user32.inc
-
-MR_WriteConsole MACRO message, message_size
-	invoke WriteConsole, std_output_handle, OFFSET message, message_size, 0, 0
-ENDM
+; Protos
+ExitProcess PROTO
+SetConsoleTitleW PROTO
+text proto
 
 .data
+	sum qword 0
 
-	std_output_handle dword ?
+	console_title word "M", "A", "S", "M", "O", "R", 0
 
-	console_title byte "MASMOR", 0
+	ucount byte 16
+	scount sbyte -8
 
-	hello_message byte "MASMOR Start!", 13, 10
-	hello_message_size dword $ - hello_message
+	flags byte ?
 
-	test_message byte "TEST_MESSAGE "
-		byte "and there is another line", 13, 10
+	val1 word 1
+	val2 word 2
 
-	; It should be always divided by the size of an one element, single char is one byte so we divide the size by 1
-	; $ is the current location counter, returns the offset to current program statement
-	test_message_size dword ($ - test_message) / 1
+	arrayB byte 10h, 20h, 30h, 40h, 50h
 
-	; Allocate 20 bytes ~ uninitialized
-	dup_test byte 20 dup(?)
-
-	main_loop_counter dword 0
-
-	; Binary coded decimal with valid initialization value
-	tbyte_test TBYTE 800000000000001234h
-
-	; Floats (real4, real8, real10)
-	real_test real4 -1.2
+	arrayW word 1, 2, 3, 4, 5
 
 .code
 
-MR_test proc
-	mov EAX, test_message_size
-	MR_WriteConsole test_message, EAX
-	mov EAX, 1
-	ret
-MR_test endp
+	main proc
 
-main proc
+		; movzx copy content from the source operand and zero-extend the bits to the destination operand
+		; unsigned int
+		movzx rcx, ucount
 
-	; STD OUTPUT HANDLE
-	invoke GetStdHandle, STD_OUTPUT_HANDLE_VALUE ; -11 is STD_OUTPUT_HANDLE
-	mov std_output_handle, EAX
+		; movsx is working like movzx but instead of zero-extend it's copying the highest bit of the source operand
+		movsx rcx, scount
 
-	MR_WriteConsole hello_message, hello_message_size
+		; Copy the low byte of the eflags register into the ah register
+		lahf
+		mov flags, ah
 
-	invoke SetConsoleTitle, OFFSET console_title
+		; Copy the saved flags to the eflags register
+		mov ah, 0 ; First set the flags to 0
+		sahf
+		
+		; Restore the flags
+		mov ah, flags
+		sahf
 
-	main_loop:
-		; Print a message in the console
-		;MR_WriteConsole test_message, test_message_size
-		; Invoke a function
-		invoke MR_test
-		inc main_loop_counter
+		; Exchange the contents of two operands
+		xchg ah, al
 
-		mov eax, 0
-		inc eax
+		; xchg does not support two memory operands
+		;xchg val1, val2 ; invalid
 
-		.if main_loop_counter < 10
-			jmp main_loop
-		.endif
+		; direct-offset operand
+		mov al, arrayB
+		mov al, [arrayB+1]
+		mov al, [arrayB+2]
 
-	invoke ExitProcess, EAX
+		; We always need to jump by using the size in bytes of a one element
+		mov ax, arrayW
+		mov ax, [arrayW+2]
+		mov ax, [arrayW+4]
 
-main endp
+		mov ecx, 0
+		call ExitProcess
 
-; Marks the end of a module and sets the program entry point to main
-end main
+	main endp
+
+end

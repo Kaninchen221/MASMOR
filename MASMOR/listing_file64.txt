@@ -1,0 +1,118 @@
+Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/23/26 21:41:43
+main.asm						     Page 1 - 1
+
+
+
+
+				; Include libs
+				INCLUDELIB kernel32.lib
+				INCLUDELIB user32.lib
+
+				; Protos
+				ExitProcess PROTO
+				SetConsoleTitleW PROTO
+				text proto
+
+ 00000000			.data
+ 00000000				sum qword 0
+	   0000000000000000
+
+ 00000008 004D 0041 0053		console_title word "M", "A", "S", "M", "O", "R", 0
+	   004D 004F 0052
+	   0000
+
+ 00000016 10				ucount byte 16
+ 00000017 F8				scount sbyte -8
+
+ 00000018 00				flags byte ?
+
+ 00000019 0001				val1 word 1
+ 0000001B 0002				val2 word 2
+
+ 0000001D 10 20 30 40 50		arrayB byte 10h, 20h, 30h, 40h, 50h
+
+ 00000022 0001 0002 0003		arrayW word 1, 2, 3, 4, 5
+	   0004 0005
+
+ 00000000			.code
+
+ 00000000				main proc
+
+						; movzx copy content from the source operand and zero-extend the bits to the destination operand
+						; unsigned int
+ 00000000  48/ 0F B6 0D				movzx rcx, ucount
+	   00000016 R
+
+						; movsx is working like movzx but instead of zero-extend it's copying the highest bit of the source operand
+ 00000008  48/ 0F BE 0D				movsx rcx, scount
+	   00000017 R
+
+						; Copy the low byte of the eflags register into the ah register
+ 00000010  9F					lahf
+ 00000011  88 25 00000018 R			mov flags, ah
+
+						; Copy the saved flags to the eflags register
+ 00000017  B4 00				mov ah, 0 ; First set the flags to 0
+ 00000019  9E					sahf
+						
+						; Restore the flags
+ 0000001A  8A 25 00000018 R			mov ah, flags
+ 00000020  9E					sahf
+
+						; Exchange the contents of two operands
+ 00000021  86 E0				xchg ah, al
+
+						; xchg does not support two memory operands
+						;xchg val1, val2 ; invalid
+
+						; direct-offset operand
+ 00000023  8A 05 0000001D R			mov al, arrayB
+ 00000029  8A 05 0000001E R			mov al, [arrayB+1]
+ 0000002F  8A 05 0000001F R			mov al, [arrayB+2]
+
+						; We always need to jump by using the size in bytes of a one element
+ 00000035  66| 8B 05				mov ax, arrayW
+	   00000022 R
+ 0000003C  66| 8B 05				mov ax, [arrayW+2]
+	   00000024 R
+ 00000043  66| 8B 05				mov ax, [arrayW+4]
+	   00000026 R
+
+ 0000004A  B9 00000000				mov ecx, 0
+ 0000004F  E8 00000000 E			call ExitProcess
+
+ 00000054				main endp
+
+				end
+Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/23/26 21:41:43
+main.asm						     Symbols 2 - 1
+
+
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+SetConsoleTitleW . . . . . . . .	P 	 00000000 Length= 00000000 External
+main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 00000054 Public
+text . . . . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+arrayB . . . . . . . . . . . . .	Byte	 0000001D _DATA	
+arrayW . . . . . . . . . . . . .	Word	 00000022 _DATA	
+console_title  . . . . . . . . .	Word	 00000008 _DATA	
+flags  . . . . . . . . . . . . .	Byte	 00000018 _DATA	
+scount . . . . . . . . . . . . .	Byte	 00000017 _DATA	
+sum  . . . . . . . . . . . . . .	QWord	 00000000 _DATA	
+ucount . . . . . . . . . . . . .	Byte	 00000016 _DATA	
+val1 . . . . . . . . . . . . . .	Word	 00000019 _DATA	
+val2 . . . . . . . . . . . . . .	Word	 0000001B _DATA	
+
+	   0 Warnings
+	   0 Errors
