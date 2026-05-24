@@ -26,6 +26,16 @@ text proto
 
 	arrayW word 1, 2, 3, 4, 5
 
+	sub_dest dword 30000h
+	sub_source dword 10000h
+
+	negate_result sdword -8
+
+	r_val sdword ?
+	x_val sdword 26
+	y_val sdword 30
+	z_val sdword 40
+
 .code
 
 	main proc
@@ -64,6 +74,34 @@ text proto
 		mov ax, arrayW
 		mov ax, [arrayW+2]
 		mov ax, [arrayW+4]
+
+		; Subtraction
+		;sub sub_dest, sub_source ; The destiny operand must be reg
+		mov eax, sub_dest
+		sub eax, sub_source
+		mov sub_dest, eax
+
+		; Negate (both reg and memmory operand are valid)
+		mov eax, 1
+		neg eax
+		neg negate_result
+
+		; Arithmetic expression (-r_val + (y_val - z_val))
+		mov eax, x_val
+		neg eax
+		mov ebx, y_val
+		sub ebx, z_val
+		add eax, ebx
+		mov r_val, eax
+
+		; Zero, Carry and Auxiliary Carry
+		; We are using x64 so the 'ZF' reg is 'ZR'
+		mov ecx, 1
+		sub ecx, 1 ; ecx = 0, zr = 1
+		mov eax, 0FFFFFFFFh
+		inc eax ; eax = 0, zr = 1
+		inc eax ; eax = 1, zr = 0
+		dec eax ; eax = 0, zr = 1
 
 		mov ecx, 0
 		call ExitProcess
