@@ -94,14 +94,37 @@ text proto
 		add eax, ebx
 		mov r_val, eax
 
+		; OV - Overflow Flag
+		; UP - Direction Flag
+		; EI - Interrupt Flag
+		; PL - Sign Flag
+		; ZR - Zero Flag
+		; AC - Auciliary Flag
+		; PE - Parity Flag
+		; CY - Carry Flag
+
 		; Zero, Carry and Auxiliary Carry
+		; ZR - Zero Flag
 		; We are using x64 so the 'ZF' reg is 'ZR'
 		mov ecx, 1
-		sub ecx, 1 ; ecx = 0, zr = 1
+		sub ecx, 1 ; ecx = 0, ZR = 1
 		mov eax, 0FFFFFFFFh
-		inc eax ; eax = 0, zr = 1
-		inc eax ; eax = 1, zr = 0
-		dec eax ; eax = 0, zr = 1
+		inc eax ; eax = 0, ZR = 1
+		inc eax ; eax = 1, ZR = 0
+		dec eax ; eax = 0, ZR = 1
+
+		; Carry Flag
+		; CY - Carry Flag
+		mov al, 0FFh
+		add al, 1 ; AL = 00, CY = 1
+
+		mov ax, 00FFh
+		add ax, 1 ; AX = 0100h, CY = 0
+
+		; Substraction also set the CY
+		mov al, 1
+		sub al, 2 ; AL = 0FFh, CY = 1
+		sub al, 1 ; AL = 0FFh, CY = 0
 
 		mov ecx, 0
 		call ExitProcess

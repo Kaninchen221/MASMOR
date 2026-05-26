@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler (x64) Version 14.44.35213.0   05/24/26 13:08:08
+Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/26/26 22:23:41
 main.asm						     Page 1 - 1
 
 
@@ -107,22 +107,45 @@ main.asm						     Page 1 - 1
  0000007D  03 C3				add eax, ebx
  0000007F  89 05 00000038 R			mov r_val, eax
 
+						; OV - Overflow Flag
+						; UP - Direction Flag
+						; EI - Interrupt Flag
+						; PL - Sign Flag
+						; ZR - Zero Flag
+						; AC - Auciliary Flag
+						; PE - Parity Flag
+						; CY - Carry Flag
+
 						; Zero, Carry and Auxiliary Carry
+						; ZR - Zero Flag
 						; We are using x64 so the 'ZF' reg is 'ZR'
  00000085  B9 00000001				mov ecx, 1
- 0000008A  83 E9 01				sub ecx, 1 ; ecx = 0, zr = 1
+ 0000008A  83 E9 01				sub ecx, 1 ; ecx = 0, ZR = 1
  0000008D  B8 FFFFFFFF				mov eax, 0FFFFFFFFh
- 00000092  FF C0				inc eax ; eax = 0, zr = 1
- 00000094  FF C0				inc eax ; eax = 1, zr = 0
- 00000096  FF C8				dec eax ; eax = 0, zr = 1
+ 00000092  FF C0				inc eax ; eax = 0, ZR = 1
+ 00000094  FF C0				inc eax ; eax = 1, ZR = 0
+ 00000096  FF C8				dec eax ; eax = 0, ZR = 1
 
- 00000098  B9 00000000				mov ecx, 0
- 0000009D  E8 00000000 E			call ExitProcess
+						; Carry Flag
+						; CY - Carry Flag
+ 00000098  B0 FF				mov al, 0FFh
+ 0000009A  04 01				add al, 1 ; AL = 00, CY = 1
 
- 000000A2				main endp
+ 0000009C  66| B8 00FF				mov ax, 00FFh
+ 000000A0  66| 83 C0 01				add ax, 1 ; AX = 0100h, CY = 0
+
+						; Substraction also set the CY
+ 000000A4  B0 01				mov al, 1
+ 000000A6  2C 02				sub al, 2 ; AL = 0FFh, CY = 1
+ 000000A8  2C 01				sub al, 1 ; AL = 0FFh, CY = 0
+
+ 000000AA  B9 00000000				mov ecx, 0
+ 000000AF  E8 00000000 E			call ExitProcess
+
+ 000000B4				main endp
 
 				end
-Microsoft (R) Macro Assembler (x64) Version 14.44.35213.0   05/24/26 13:08:08
+Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/26/26 22:23:41
 main.asm						     Symbols 2 - 1
 
 
@@ -134,7 +157,7 @@ Procedures, parameters, and locals:
 
 ExitProcess  . . . . . . . . . .	P 	 00000000 Length= 00000000 External
 SetConsoleTitleW . . . . . . . .	P 	 00000000 Length= 00000000 External
-main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 000000A2 Public
+main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 000000B4 Public
 text . . . . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
 
 
