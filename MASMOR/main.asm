@@ -126,6 +126,44 @@ text proto
 		sub al, 2 ; AL = 0FFh, CY = 1
 		sub al, 1 ; AL = 0FFh, CY = 0
 
+		; Auxiliary Carry - carry or borrow out of 3 bit in the destination operand
+		mov rax, 0
+		mov al, 00Fh
+		add al, 1 ; AC = 1
+
+		; Parity Flag - when least significant byte of the destination has an even number of 1 bits
+		mov rax, 0
+		mov al, 10001100b
+		add al, 00000010b ; AL = 10001110, PE = 1
+		sub al, 10000000b ; AL = 00001110, PE = 0
+
+		; Sign Flag
+		mov rax, 0
+		mov eax, 4
+		sub eax, 5 ; EAX = -1, PL = 1
+
+		mov rbx, 0
+		mov bl, 1 ; BL = 01h
+		sub bl, 2 ; BL = FFh, PL = 1
+
+		; Overflow Flag - signed arithmetic operation overflows or underflows the destination operand
+		; Overflow
+		mov al, +127
+		add al, 1 ; OV = 1
+		add al, 1 ; OV = 0
+
+		; Underflow
+		mov al, -128
+		sub al, 1 ; OV = 1
+		sub al, 1 ; OV = 0
+
+		; Overflow with NEG
+		mov al, -128 ; AL = 10000000b
+		neg al ; AL = 10000000b, OV = 1
+
+		mov al, +127 ; AL = 01111111b
+		neg al ; AL = 10000001b, OV = 0
+
 		mov ecx, 0
 		call ExitProcess
 

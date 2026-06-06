@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/26/26 22:23:41
+Microsoft (R) Macro Assembler (x64) Version 14.44.35213.0   06/06/26 13:49:42
 main.asm						     Page 1 - 1
 
 
@@ -139,13 +139,55 @@ main.asm						     Page 1 - 1
  000000A6  2C 02				sub al, 2 ; AL = 0FFh, CY = 1
  000000A8  2C 01				sub al, 1 ; AL = 0FFh, CY = 0
 
- 000000AA  B9 00000000				mov ecx, 0
- 000000AF  E8 00000000 E			call ExitProcess
+						; Auxiliary Carry - carry or borrow out of 3 bit in the destination operand
+ 000000AA  48/ C7 C0				mov rax, 0
+	   00000000
+ 000000B1  B0 0F				mov al, 00Fh
+ 000000B3  04 01				add al, 1 ; AC = 1
 
- 000000B4				main endp
+						; Parity Flag - when least significant byte of the destination has an even number of 1 bits
+ 000000B5  48/ C7 C0				mov rax, 0
+	   00000000
+ 000000BC  B0 8C				mov al, 10001100b
+ 000000BE  04 02				add al, 00000010b ; AL = 10001110, PE = 1
+ 000000C0  2C 80				sub al, 10000000b ; AL = 00001110, PE = 0
+
+						; Sign Flag
+ 000000C2  48/ C7 C0				mov rax, 0
+	   00000000
+ 000000C9  B8 00000004				mov eax, 4
+ 000000CE  83 E8 05				sub eax, 5 ; EAX = -1, PL = 1
+
+ 000000D1  48/ C7 C3				mov rbx, 0
+	   00000000
+ 000000D8  B3 01				mov bl, 1 ; BL = 01h
+ 000000DA  80 EB 02				sub bl, 2 ; BL = FFh, PL = 1
+
+						; Overflow Flag - signed arithmetic operation overflows or underflows the destination operand
+						; Overflow
+ 000000DD  B0 7F				mov al, +127
+ 000000DF  04 01				add al, 1 ; OV = 1
+ 000000E1  04 01				add al, 1 ; OV = 0
+
+						; Underflow
+ 000000E3  B0 80				mov al, -128
+ 000000E5  2C 01				sub al, 1 ; OV = 1
+ 000000E7  2C 01				sub al, 1 ; OV = 0
+
+						; Overflow with NEG
+ 000000E9  B0 80				mov al, -128 ; AL = 10000000b
+ 000000EB  F6 D8				neg al ; AL = 10000000b, OV = 1
+
+ 000000ED  B0 7F				mov al, +127 ; AL = 01111111b
+ 000000EF  F6 D8				neg al ; AL = 10000001b, OV = 0
+
+ 000000F1  B9 00000000				mov ecx, 0
+ 000000F6  E8 00000000 E			call ExitProcess
+
+ 000000FB				main endp
 
 				end
-Microsoft (R) Macro Assembler (x64) Version 14.44.35214.0   05/26/26 22:23:41
+Microsoft (R) Macro Assembler (x64) Version 14.44.35213.0   06/06/26 13:49:42
 main.asm						     Symbols 2 - 1
 
 
@@ -157,7 +199,7 @@ Procedures, parameters, and locals:
 
 ExitProcess  . . . . . . . . . .	P 	 00000000 Length= 00000000 External
 SetConsoleTitleW . . . . . . . .	P 	 00000000 Length= 00000000 External
-main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 000000B4 Public
+main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 000000FB Public
 text . . . . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
 
 
