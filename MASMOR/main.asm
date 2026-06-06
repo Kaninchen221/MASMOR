@@ -40,6 +40,9 @@ text proto
 
 	main proc
 
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		; Operands
+
 		; movzx copy content from the source operand and zero-extend the bits to the destination operand
 		; unsigned int
 		movzx rcx, ucount
@@ -93,6 +96,9 @@ text proto
 		sub ebx, z_val
 		add eax, ebx
 		mov r_val, eax
+
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		; Flags
 
 		; OV - Overflow Flag
 		; UP - Direction Flag
@@ -163,6 +169,14 @@ text proto
 
 		mov al, +127 ; AL = 01111111b
 		neg al ; AL = 10000001b, OV = 0
+
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		; Data-Related Operators and Directives
+		
+		; OFFSET operator
+		; Returns the distance of a variable from the beginning of its enclosing segment
+		
+		
 
 		mov ecx, 0
 		call ExitProcess
