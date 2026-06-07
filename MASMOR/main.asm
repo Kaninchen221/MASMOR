@@ -36,6 +36,17 @@ text proto
 	y_val sdword 30
 	z_val sdword 40
 
+	bVal byte ?
+	align 2 ; the next adress is a multiple of 2
+	bVal2 byte ?
+	wVal word ?
+	align 4 ; the next address is a multiple of 4
+	dVal dword 12345678h
+	dVal2 dword ?
+
+	var16 label word ; label directive, works lika an alias to the first half of the next var
+	var32 dword 12345678h
+
 .code
 
 	main proc
@@ -176,7 +187,46 @@ text proto
 		; OFFSET operator
 		; Returns the distance of a variable from the beginning of its enclosing segment
 		
+		mov rsi, offset bVal
+		mov rsi, offset wVal
+		mov rsi, offset dVal
+		mov rsi, offset dVal2
+
+		; ALIGN directive
+		; It's used with above variables		
+
+		; PTR operator
+		; Override the declared size of an operand
+
+		mov ax, word ptr dVal
+		mov ax, word ptr [dVal + 2]
+
+		; TYPE operator
+		; Return the size, in bytes, of a single element of a variable
+		mov eax, 0
+		mov eax, type bVal
+		mov eax, type wVal
+		mov eax, type dVal
+
+		; LENGTHOF operator
+		; Counts the number of elements in an array
+		mov eax, 0
+		mov eax, lengthof arrayB
+
+		; SIZEOF operator
+		mov eax, 0
+		mov eax, lengthof arrayW
+		mov eax, sizeof arrayW
+
+		; LABEL directive
+		; Insert a label and give it a size atrribute without allocating any size
+		mov eax, 0
+		mov ax, var16
+		mov ax, [var16 + 2]
 		
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		; Indirect Addressing
+
 
 		mov ecx, 0
 		call ExitProcess
